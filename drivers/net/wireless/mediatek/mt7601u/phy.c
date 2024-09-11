@@ -719,7 +719,7 @@ static void mt7601u_tssi_dc_gain_cal(struct mt7601u_dev *dev)
 
 static int mt7601u_temp_comp(struct mt7601u_dev *dev, bool on)
 {
-	int ret, temp, hi_temp = 400, lo_temp = -200;
+	int temp, hi_temp = 400, lo_temp = -200;
 
 	temp = (dev->raw_temp - dev->ee->ref_temp) * MT_EE_TEMPERATURE_SLOPE;
 	dev->curr_temp = temp;
@@ -727,10 +727,6 @@ static int mt7601u_temp_comp(struct mt7601u_dev *dev, bool on)
 	/* DPD Calibration */
 	if (temp - dev->dpd_temp > 450 || temp - dev->dpd_temp < -450) {
 		dev->dpd_temp = temp;
-
-		ret = mt7601u_mcu_calibrate(dev, MCU_CAL_DPD, dev->dpd_temp);
-		if (ret)
-			return ret;
 
 		mt7601u_vco_cal(dev);
 
@@ -1155,9 +1151,6 @@ static int mt7601u_init_cal(struct mt7601u_dev *dev)
 	if (ret)
 		return ret;
 	ret = mt7601u_mcu_calibrate(dev, MCU_CAL_TXIQ, 0);
-	if (ret)
-		return ret;
-	ret = mt7601u_mcu_calibrate(dev, MCU_CAL_RXIQ, 0);
 	if (ret)
 		return ret;
 
